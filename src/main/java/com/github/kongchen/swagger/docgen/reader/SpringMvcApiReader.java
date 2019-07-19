@@ -8,9 +8,10 @@ import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.*;
 import io.swagger.models.Tag;
+import io.swagger.models.*;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 import io.swagger.util.BaseReaderUtils;
@@ -116,7 +117,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 //http method
                 for (RequestMethod requestMethod : requestMapping.method()) {
                     String httpMethod = requestMethod.toString().toLowerCase();
-                    Operation operation = parseMethod(method, requestMethod);
+                    Operation operation = parseMethod(method, requestMethod, path);
 
                     updateOperationParameters(new ArrayList<Parameter>(), regexMap, operation);
 
@@ -140,7 +141,7 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         return swagger;
     }
 
-    private Operation parseMethod(Method method, RequestMethod requestMethod) {
+    private Operation parseMethod(Method method, RequestMethod requestMethod, String path) {
         int responseCode = 200;
         Operation operation = new Operation();
 
@@ -300,7 +301,13 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
                 if(parameter.getName().isEmpty()) {
                     parameter.setName(parameterNames[i]);
                 }
-                operation.parameter(parameter);
+                if (parameter instanceof PathParameter) {
+                    if (path.contains(String.format("{%s}", parameter.getName()))) {
+                        operation.parameter(parameter);
+                    }
+                } else {
+                    operation.parameter(parameter);
+                }
             }
         }
 
@@ -337,18 +344,20 @@ public class SpringMvcApiReader extends AbstractReader implements ClassSwaggerRe
         for (Method method : methods) {
             RequestMapping requestMapping = findMergedAnnotation(method, RequestMapping.class);
             if (requestMapping != null) {
-                String path;
+                List<String> paths = new ArrayList<>();
                 if (requestMapping.value().length != 0) {
-                    path = generateFullPath(requestMapping.value()[0]);
+                    for (int i = 0; i < requestMapping.value().length; i++) {
+                        paths.add(generateFullPath(requestMapping.value()[i]));
+                    }
                 } else {
-                    path = resourcePath;
+                    paths.add(resourcePath);
                 }
-                if (apiMethodMap.containsKey(path)) {
-                    apiMethodMap.get(path).add(method);
+                if (apiMethodMap.containsKey(paths)) {
+                    apiMethodMap.get(paths).add(method);
                 } else {
                     List<Method> ms = new ArrayList<Method>();
                     ms.add(method);
-                    apiMethodMap.put(path, ms);
+                    paths.forEach(path -> apiMethodMap.put(path, ms));
                 }
             }
         }

@@ -9,9 +9,9 @@ import io.swagger.annotations.*;
 import io.swagger.converter.ModelConverters;
 import io.swagger.jaxrs.ext.SwaggerExtension;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
-import io.swagger.models.*;
 import io.swagger.models.Path;
 import io.swagger.models.Tag;
+import io.swagger.models.*;
 import io.swagger.models.parameters.*;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
@@ -30,6 +30,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author chekong on 15/4/28.
@@ -524,6 +525,7 @@ public abstract class AbstractReader {
     }
     
     protected String getOperationId(Method method, String httpMethod) {
+        ThreadLocalRandom rand = ThreadLocalRandom.current();
   		if (this.operationIdFormat == null) {
   			this.operationIdFormat = OPERATION_ID_FORMAT_DEFAULT;
   		}
@@ -537,6 +539,8 @@ public abstract class AbstractReader {
   		sb.replaceAll("{{className}}", className);
   		sb.replaceAll("{{methodName}}", methodName);
   		sb.replaceAll("{{httpMethod}}", httpMethod);
+
+  		sb.append(String.format("_%d", rand.nextInt(0, 10000)));
   		
   		return sb.toString();
     }
