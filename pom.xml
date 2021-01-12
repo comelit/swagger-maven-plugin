@@ -474,15 +474,16 @@
     </profiles>
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
-        </snapshotRepository>
         <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>comelit-central</id>
+            <name>libs-release-cloud-ccs</name>
+            <url>https://artifactory.cloud.comelitgroup.com/artifactory/libs-release-cloud-ccs</url>
         </repository>
+        <snapshotRepository>
+            <id>comelit-snapshots</id>
+            <uniqueVersion>true</uniqueVersion>
+            <name>libs-snapshot-cloud-ccs</name>
+            <url>https://artifactory.cloud.comelitgroup.com/artifactory/libs-snapshot-cloud-ccs</url>
+        </snapshotRepository>
     </distributionManagement>
 </project>
