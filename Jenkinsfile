@@ -33,7 +33,6 @@ pipeline {
                 -Duser.home=$HOME -Dmaven.test.skip=true dependency:go-offline'
             }
         }
-
         stage('Deploy') {
             when {
                expression { env.TAG != null && env.TAG != ""}
@@ -45,7 +44,6 @@ pipeline {
                     -Dsettings.security=$WORKSPACE/__jenkins_build_tmp/settings-security.xml -Duser.home=$HOME -Dmaven.test.skip=true dependency:go-offline'
                 }
         }
-
         stage('Inform Slack for success') {
             steps {
                 script {
