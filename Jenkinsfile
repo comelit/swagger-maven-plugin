@@ -33,12 +33,6 @@ pipeline {
                 -Duser.home=$HOME -Dmaven.test.skip=true dependency:go-offline'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'mvn test -s $WORKSPACE/__jenkins_build_tmp/settings.xml -Dsettings.security=$WORKSPACE/__jenkins_build_tmp/settings-security.xml \
-                -Duser.home=$HOME dependency:go-offline'
-            }
-        }
 
         stage('Deploy') {
             when {
