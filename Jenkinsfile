@@ -34,9 +34,6 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when {
-               expression { env.TAG != null && env.TAG != ""}
-            }
             steps {
                     sh 'mvn compile -s $WORKSPACE/__jenkins_build_tmp/settings.xml -Dsettings.security=$WORKSPACE/__jenkins_build_tmp/settings-security.xml \
                     -Duser.home=$HOME -Dmaven.test.skip=true dependency:go-offline'
